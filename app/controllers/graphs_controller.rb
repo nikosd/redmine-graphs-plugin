@@ -2,7 +2,7 @@ require 'SVG/Graph/TimeSeries'
 
 class GraphsController < ApplicationController
     unloadable
-    
+  
     ############################################################################
     # Initialization
     ############################################################################
@@ -212,10 +212,23 @@ class GraphsController < ApplicationController
         # Group issues
         issues_by_created_on = @version.fixed_issues.group_by {|issue| issue.created_on.to_date }.sort
         issues_by_updated_on = @version.fixed_issues.group_by {|issue| issue.updated_on.to_date }.sort
+<<<<<<< HEAD
         issues_by_closed_on = @version.fixed_issues.collect {|issue| issue if issue.closed? }.compact.group_by {|issue| issue.updated_on.to_date }.sort
                     
         # Set the scope of the graph
         scope_end_date = issues_by_updated_on.last.first
+=======
+        issues_by_closed_on = @version.fixed_issues.collect { |issue| issue if issue.closed? }.compact.group_by {|issue| issue.updated_on.to_date }.sort
+
+        # About the request if no issues were found.
+        if issues_by_created_on.empty? && issues_by_updated_on.empty? && issues_by_closed_on.empty?
+          render(:nothing => true)
+          return false
+        end
+      
+        # Set the scope of the graph
+        scope_end_date = issues_by_updated_on.to_a[-1][0] if issues_by_updated_on.size > 0 # Get the last "key".  Rails 2.3 change
+>>>>>>> 9323675b433efd5a5af71039a99fbacc8e5a69fe
         scope_end_date = @version.effective_date if !@version.effective_date.nil? && @version.effective_date > scope_end_date
         scope_end_date = Date.today if !@version.completed?
         line_end_date = Date.today
